@@ -8,7 +8,24 @@ class User:
         self.name = name
 
     def buy(self, seat, card):
-        pass
+        seat.occupy()
+
+        connection = sqlite3.connect("banking.db")
+        cursor = connection.cursor()
+        cursor.execute("""
+        SELECT "balance" FROM "Card" WHERE number=?
+        """, [card])
+        balance: list = cursor.fetchall()
+        connection.close()
+        balance: float = float(balance[0][0])
+        update_balance: str = balance - seat.price
+
+        connection = sqlite3.connect("banking.db")
+        connection.execute("""
+        UPDATE "Card" SET "balance"=? WHERE number=?
+        """, [update_balance, card])
+        connection.commit()
+        connection.close()
 
 
 class Seat:
@@ -47,11 +64,11 @@ class Seat:
 
 
 class Card:
-    def __init__(self, card_circuit: str, card_number: int, card_cvc: int, card_holder: str):
-        self.card_circuit = str(card_circuit)
-        self.card_number = str(card_number)
-        self.card_cvc = str(card_cvc)
-        self.card_holder = str(card_holder)
+    def __init__(self, card_circuit: str, card_number: str, card_cvc: str, card_holder: str):
+        self.card_circuit = card_circuit
+        self.card_number = card_number
+        self.card_cvc = card_cvc
+        self.card_holder = card_holder
 
     def is_valid(self, seat_price):
 
@@ -81,4 +98,28 @@ class Ticket:
 
     def to_pdf(self):
         pass
+
+
+while True:
+    full_name: str = input("Your full name: ")
+    user1 = User(full_name)
+    selected_seat: str = input("Preferred seat number: ")
+    if Seat(selected_seat).is_free():
+        user1_seat = Seat(selected_seat)
+        print(f"{selected_seat} is free.")
+    else:
+        print("Seat occupied...")
+        continue
+
+    card_type: str = input("Your card type: ")
+    card_number: str = input("Your card number: ")
+    card_cvc: str = input("Your card cvc: ")
+    holder_name: str = input("Card holder name: ")
+    card = Card(card_type, card_number, card_cvc, holder_name)
+    if card.is_valid(user1_seat.price):
+        print("Your card is valid.")
+        user1.buy(user1_seat, card_number)
+    else:
+        print("There was a problem with your card.")
+
 
