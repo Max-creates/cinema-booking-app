@@ -2,6 +2,9 @@ import sqlite3
 
 
 class Card:
+
+    database = "banking.db"
+
     def __init__(self, card_circuit: str, card_number: str, card_cvc: str, card_holder: str):
         self.card_circuit = card_circuit
         self.card_number = card_number
@@ -10,7 +13,7 @@ class Card:
 
     def is_valid(self, seat_price):
 
-        connection = sqlite3.connect("banking.db")
+        connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
         cursor.execute("""
         SELECT "type", "number", "cvc", "holder", "balance" FROM "Card" WHERE number=?

@@ -2,10 +2,13 @@ import sqlite3
 
 
 class Seat:
-    def __init__(self, number: str):
-        self.seat_id = number
 
-        connection = sqlite3.connect("cinema.db")
+    database = "cinema.db"
+
+    def __init__(self, seat_id: str):
+        self.seat_id = seat_id
+
+        connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
         cursor.execute(f"""
         SELECT "price" FROM "Seat" WHERE seat_id=?
@@ -15,7 +18,7 @@ class Seat:
         self.price = price[0][0]
 
     def is_free(self):
-        connection = sqlite3.connect("cinema.db")
+        connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
         cursor.execute(f"""
         SELECT "taken" FROM "Seat" WHERE seat_id=?
@@ -28,7 +31,7 @@ class Seat:
             return False
 
     def occupy(self):
-        connection = sqlite3.connect("cinema.db")
+        connection = sqlite3.connect(self.database)
         connection.execute(f"""
         UPDATE "Seat" SET "taken"=1 WHERE seat_id=?
         """, [self.seat_id])
