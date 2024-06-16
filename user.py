@@ -9,7 +9,6 @@ class User:
         self.name = name
 
     def buy(self, seat, card):
-        seat.occupy()
 
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()

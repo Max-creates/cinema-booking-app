@@ -21,6 +21,7 @@ while True:
     card = Card(card_type, card_number, card_cvc, card_holder)
     if card.is_valid(seat.price):
         user.buy(seat, card_number)
+        seat.occupy()
         ticket = Ticket(user.name, seat.price, seat.seat_id)
         ticket.to_pdf()
         print("Purchase Successful!")

@@ -13,9 +13,9 @@ class Seat:
         cursor.execute(f"""
         SELECT "price" FROM "Seat" WHERE seat_id=?
         """, [self.seat_id])
-        price: list[list[tuple]] = cursor.fetchall()
+        price: list[list[tuple]] = cursor.fetchall()[0][0]
         connection.close()
-        self.price = price[0][0]
+        self.price = price
 
     def is_free(self):
         connection = sqlite3.connect(self.database)
@@ -23,9 +23,9 @@ class Seat:
         cursor.execute(f"""
         SELECT "taken" FROM "Seat" WHERE seat_id=?
         """, [self.seat_id])
-        result: list[list[tuple]] = cursor.fetchall()
+        result: list[list[tuple]] = cursor.fetchall()[0][0]
         connection.close()
-        if result[0][0] == 0:
+        if result == 0:
             return True
         else:
             return False
