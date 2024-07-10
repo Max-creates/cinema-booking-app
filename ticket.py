@@ -1,6 +1,7 @@
 import random
 import string
 from fpdf import FPDF
+from qrcode import QRCode
 
 
 class Ticket:
@@ -10,6 +11,8 @@ class Ticket:
         self.user = user
         self.price = price
         self.seat = seat
+        self.generate_qr()
+
 
     def to_pdf(self):
         pdf = FPDF(orientation="P", unit="mm", format="A4")
@@ -38,6 +41,13 @@ class Ticket:
         pdf.cell(w=40, h=10, txt="Seat Number", border=1)
         pdf.set_font("Arial", "", 13)
         pdf.cell(w=0, h=10, txt=self.seat, border=1, ln=1)
+        #pdf.image(f'{self.seat}_qr.png')
 
         pdf.output(f"{self.seat}_ticket.pdf")
+
+    def generate_qr(self):
+        qr_code = QRCode(box_size=10, border=1)
+        qr_code.add_data(f'Ticket ID: {self.ticket_id}, Seat: {self.seat}')
+        qr_image = qr_code.make_image(fill_color='black', back_color='white')
+        qr_image.save(f'{self.seat}_qr.png')
 
