@@ -9,18 +9,13 @@ class User:
         self.name = name
 
     def buy(self, seat, card):
-
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
         cursor.execute("""
         SELECT "balance" FROM "Card" WHERE number=?
         """, [card])
-        balance: list = cursor.fetchall()
-        connection.close()
-        balance: float = float(balance[0][0])
-        update_balance: str = balance - seat.price
-
-        connection = sqlite3.connect(self.database)
+        balance = cursor.fetchall()[0][0]
+        update_balance = balance - seat.price
         connection.execute("""
         UPDATE "Card" SET "balance"=? WHERE number=?
         """, [update_balance, card])

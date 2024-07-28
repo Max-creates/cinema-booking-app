@@ -7,7 +7,6 @@ class Seat:
 
     def __init__(self, seat_id: str):
         self.seat_id = seat_id
-
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
         cursor.execute(f"""
