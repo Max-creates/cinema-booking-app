@@ -13,17 +13,25 @@ class Card:
 
     def is_valid(self, seat_price):
 
-        connection = sqlite3.connect(self.database)
-        cursor = connection.cursor()
-        cursor.execute("""
-        SELECT "type", "number", "cvc", "holder", "balance" FROM "Card" WHERE number=?
-        """, [self.card_number])
-        card_data: list[list[tuple]] = cursor.fetchall()
-        connection.close()
+        # Using context manager to ensure the connection is properly closed.
+        with sqlite3.connect(self.database) as connection:
+            cursor = connection.cursor()
+            cursor.execute("""
+            SELECT "type", "number", "cvc", "holder", "balance" FROM "Card" WHERE number=?
+            """, [self.card_number])
+            card_data = cursor.fetchone()
 
-        if self.card_circuit == card_data[0][0] and self.card_number == card_data[0][1] \
-            and self.card_cvc == card_data[0][2] and self.card_holder == card_data[0][3] \
-                and card_data[0][4] >= seat_price:
-            return True
-        else:
-            return False
+        # This is a good check for empty results to prevent runtime errors.
+        if not card_data:
+            return False  # Card does not exist
+
+        card_type, number, cvc, holder, balance = card_data
+
+        return (
+            self.card_circuit == card_type and
+            self.card_number == number and
+            self.card_cvc == cvc and
+            self.card_holder == holder and
+            balance >= seat_price
+        )
+

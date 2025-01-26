@@ -16,6 +16,8 @@ class Seat:
         connection.close()
         self.price = price
 
+
+
     def is_free(self):
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
