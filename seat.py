@@ -17,7 +17,6 @@ class Seat:
         self.price = price
 
 
-
     def is_free(self):
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
@@ -26,10 +25,8 @@ class Seat:
         """, [self.seat_id])
         result: list[list[tuple]] = cursor.fetchall()[0][0]
         connection.close()
-        if result == 0:
-            return True
-        else:
-            return False
+        return result == 0:
+
 
     def occupy(self):
         connection = sqlite3.connect(self.database)
