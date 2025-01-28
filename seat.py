@@ -17,15 +17,19 @@ class Seat:
         self.price = price
 
 
-    def is_free(self):
+    def is_free(self) -> bool:
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
         cursor.execute(f"""
         SELECT "taken" FROM "Seat" WHERE seat_id=?
         """, [self.seat_id])
-        result: list[list[tuple]] = cursor.fetchall()[0][0]
+        result: list[tuple] = cursor.fetchall()[0][0]
         connection.close()
-        return result == 0:
+
+        if result is None:
+            return False
+        
+        return result == 0
 
 
     def occupy(self):
